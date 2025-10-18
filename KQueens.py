@@ -1,7 +1,4 @@
-from collections import Counter
-
-
-def get_number_conflicts(queens: list) -> dict:
+def get_number_conflicts(queens: list[int]) -> dict[tuple[int, int], int]:
     """
     ☆★ 計算皇后衝突的數量 ★☆
     
@@ -49,14 +46,14 @@ def get_number_conflicts(queens: list) -> dict:
 
     # 第一步，建立六個主要集合來追蹤皇后的位置和衝突情況  ex:[2, 0, 7, 3, 6, 4, 5, 1]
     # 1. 皇后的位置
-    queens_col = set()          # 行  ex: {2, 0, 7, 3, 6, 4, 5, 1}
-    queens_diag = set()         # 正對角線  ex: {-2, 1, -5, 0, -2, 1, 1, 6}
-    queens_anti_diag = set()    # 反對角線  ex: {2, 1, 9, 6, 10, 9, 11, 8}
+    queens_col: set[int] = set()          # 行  ex: {2, 0, 7, 3, 6, 4, 5, 1}
+    queens_diag: set[int] = set()         # 正對角線  ex: {-2, 1, -5, 0, -2, 1, 1, 6}
+    queens_anti_diag: set[int] = set()    # 反對角線  ex: {2, 1, 9, 6, 10, 9, 11, 8}
 
     # 2. 衝突的位置
-    conflicts_col = {}            # 行衝突  ex: {}
-    conflicts_diag = {}           # 正對角線衝突  ex: {-2, 1}
-    conflicts_anti_diag = {}      # 反對角線衝突  ex: {9}
+    conflicts_col: dict[int, int] = {}            # 行衝突  ex: {}
+    conflicts_diag: dict[int, int] = {}           # 正對角線衝突  ex: {-2: 1, 1: 3}
+    conflicts_anti_diag: dict[int, int] = {}      # 反對角線衝突  ex: {9: 2}
 
     # 第二步，取得皇后衝突的狀況並記錄
     for row, col in enumerate(queens):
@@ -85,8 +82,8 @@ def get_number_conflicts(queens: list) -> dict:
 
     # 第三步，取得衝突的皇后座標及數量
     # 1. 建立紀錄衝突皇后的座標以及次數的容器
-    conflicts_positions = set()    # 紀錄衝突的皇后位置
-    conflicts_count = {}           # 紀錄每個皇后的衝突次數  key:皇后座標 value:衝突次數 if value = 0 則表示該皇后不衝突
+    conflicts_positions: set[tuple[int, int]] = set()   # 紀錄衝突的皇后位置
+    conflicts_count: dict[tuple[int, int], int] = {}    # 紀錄每個皇后的衝突次數  key:皇后座標 value:衝突次數 if value = 0 則表示該皇后不衝突
     for row, col in enumerate(queens):
         # 2. 取得皇后正對角線以及反對角線的值
         diagonal = row - col        # 正對角線
@@ -110,15 +107,6 @@ def get_number_conflicts(queens: list) -> dict:
     
     
 if __name__ == "__main__":
-    # queens_1 = [0, 4, 7, 5, 2, 6, 1, 3]
-    # queens_2 = [0, 1, 2, 3, 4, 5, 6, 7]
-    # queens_3 = [0, 2, 4, 2, 6, 4, 6, 7]
-    # queens_4 = [0, 0, 0, 0, 0, 0, 0, 0]
-    # queens_5 = [0, 2, 5, 1, 6, 4, 6, 7]
-    # queens_6 = [5, 1, 6, 0, 3, 7, 4, 2]
-    # queens_7 = [2, 0, 7, 3, 6, 4, 5, 1]
-    # print(get_number_conflicts(queens_6))
-    # print(get_number_conflicts(queens_7))
     print("☆★ N 皇后衝突數計算器 ★☆")
     print("輸入格式範例: 0 4 7 5 2 6 1 3 (不須輸入N值，系統會依照輸入的座標數量自動判斷N值)")
     
@@ -128,8 +116,14 @@ if __name__ == "__main__":
             break
         try:
             queens = list(map(int, input_queens.split(' ')))
+            
+            if len(queens) == 1 and queens[0] != 0:
+                print("好吧~如果你堅持輸入棋盤數量...")
+                continue
+
             if not all(x >= 0 for x in queens):
                 raise ValueError("輸入僅限非負整數，請重新輸入。")
+            
             queens_conflicts = get_number_conflicts(queens)
             print(queens_conflicts)
             for queen in queens_conflicts:
