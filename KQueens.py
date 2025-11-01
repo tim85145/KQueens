@@ -42,6 +42,14 @@ def get_number_conflicts(queens: list[int]) -> dict[tuple[int, int], int]:
     5. 如果該皇后的衝突數大於0，則將該皇后的座標加入conflicts_positions集合中。
 
     第四步，回傳衝突的數量。
+
+
+    傳入參數：
+        queens -> list[int]: 皇后的位置列表，每個元素為 (row, col)。
+
+    回傳值：
+        dict[tuple[int, int], int]: 每個皇后的位置及其衝突數。
+
     """
 
     # 第一步，建立六個主要集合來追蹤皇后的位置和衝突情況  ex:[2, 0, 7, 3, 6, 4, 5, 1]
@@ -104,7 +112,82 @@ def get_number_conflicts(queens: list[int]) -> dict[tuple[int, int], int]:
 
     # 第四步，回傳衝突的數量
     return conflicts_count
-    
+
+def get_number_conflicts_advanced(queens: list[tuple[int, int]]) -> dict[tuple[int, int], int]:
+    """
+    ☆★ 計算皇后衝突的數量（進階版）★☆
+
+    (請先了解基礎版在還看進階版，基本上進階版差異就是多處理row)
+
+    此函式處理每個皇后隨機放置的情況，並考慮列衝突。
+    皇后可能位於同一列、同一行、正對角線或反對角線上。
+
+    傳入參數：
+        queens -> (list[tuple[int, int]]): 皇后的位置列表，每個元素為 (row, col)。
+
+    回傳值：
+        dict[tuple[int, int], int]: 每個皇后的位置及其衝突數。
+    """
+    # 初始化追蹤衝突的資料結構
+    # 1.皇后的位置
+    queens_row: set[int] = set()          # 列
+    queens_col: set[int] = set()          # 行
+    queens_diag: set[int] = set()         # 正對角線
+    queens_anti_diag: set[int] = set()    # 反對角線
+
+    # 2. 衝突的位置
+    conflicts_row: dict[int, int] = {}            # 列衝突
+    conflicts_col: dict[int, int] = {}            # 行衝突
+    conflicts_diag: dict[int, int] = {}           # 正對角線衝突
+    conflicts_anti_diag: dict[int, int] = {}      # 反對角線衝突
+
+    # 第一輪：記錄所有皇后的位置及衝突情況
+    for row, col in queens:
+        diagonal = row - col        # 正對角線
+        anti_diagonal = row + col   # 反對角線
+
+        # 初始化衝突軸的位置
+        conflicts_row.setdefault(row, 0)
+        conflicts_col.setdefault(col, 0)
+        conflicts_diag.setdefault(diagonal, 0)
+        conflicts_anti_diag.setdefault(anti_diagonal, 0)
+
+        # 檢查並記錄衝突
+        if row in queens_row:
+            conflicts_row[row] += 1
+        if col in queens_col:
+            conflicts_col[col] += 1
+        if diagonal in queens_diag:
+            conflicts_diag[diagonal] += 1
+        if anti_diagonal in queens_anti_diag:
+            conflicts_anti_diag[anti_diagonal] += 1
+
+        # 將當前皇后的位置加入對應的集合中
+        queens_row.add(row)
+        queens_col.add(col)
+        queens_diag.add(diagonal)
+        queens_anti_diag.add(anti_diagonal)
+
+    # 第二輪：計算每個皇后的衝突數
+    conflicts_count: dict[tuple[int, int], int] = {}
+    for row, col in queens:
+        diagonal = row - col
+        anti_diagonal = row + col
+
+        # 初始每個皇后的衝突數
+        conflicts_count.setdefault((row, col), 0)
+
+        # 計算該皇后的衝突次數
+        conflicts_count[(row, col)] = (
+            conflicts_row[row] +
+            conflicts_col[col] +
+            conflicts_diag[diagonal] +
+            conflicts_anti_diag[anti_diagonal]
+        )
+
+    return conflicts_count
+
+
     
 if __name__ == "__main__":
     print("☆★ N 皇后衝突數計算器 ★☆")
